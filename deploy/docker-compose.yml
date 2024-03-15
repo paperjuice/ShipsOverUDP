@@ -1,0 +1,27 @@
+---
+version: '3.9'
+
+services:
+  cas_dev:
+    image: cassandra:4.0
+      #    volumes:
+      #      - ~/apps/cassandra:/var/lib/cassandra
+    environment:
+      - CASSANDRA_CLUSTER_NAME=ships_over_dns
+    ports:
+      - "9042-9043:9042"
+    networks:
+      - ships_over_dns_network
+    deploy:
+      mode: replicated
+      replicas: 2
+      endpoint_mode: dnsrr
+
+
+networks:
+  ships_over_dns_network:
+    name: ships_over_dns_network
+    external: true
+
+
+
