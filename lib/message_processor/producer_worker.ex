@@ -1,34 +1,32 @@
 defmodule ShipsOverUdp.MessageProcessor.ProducerWorker do
-  @moduledoc false
+  @moduledoc """
+  This module is responsible for asynchronosly pushing messages
+  to Kafka topic
+  """
+
+  require Logger
+
   use GenServer
 
-  def start_link(_) do
-    GenServer.start_link(__MODULE__, nil)
-  end
+  # TODO: make this env var
+  @topic "vessels"
 
-  def init(_) do
-    {:ok, nil}
-  end
+  def start_link(_), do: GenServer.start_link(__MODULE__, nil)
 
-  def handle_cast({:ais_msg, msg}, state) do
-    IO.inspect(msg, label: MSG_PUBLISHED)
-    {:noreply, state}
-  end
+  def init(_), do: {:ok, nil}
 
   def publish(msg) do
     Task.start(fn ->
       :poolboy.transaction(
         :producer_worker,
         fn pid ->
-          # Let's wrap the genserver call in a try - catch block. This allows us to trap any exceptions
-          # that might be thrown and return the worker back to poolboy in a clean manner. It also allows
-          # the programmer to retrieve the error and potentially fix it.
           try do
             GenServer.cast(pid, {:ais_msg, msg})
-           # ShipsOverUdp.Producer.temp(msg)
           catch
-            #TODO: handle the message in some way tho
-            e, r -> IO.inspect("poolboy transaction caught error: #{inspect(e)}, #{inspect(r)}")
+            e, r ->
+              Logger.error(
+                "[PRODUCER_WORKER_#{inspect(self())}] poolboy transaction caught error: #{inspect(e)}, #{inspect(r)}"
+              )
 
               :ok
           end
@@ -36,5 +34,18 @@ defmodule ShipsOverUdp.MessageProcessor.ProducerWorker do
         60_000
       )
     end)
+  end
+
+  def handle_cast({:ais_msg, msg}, state) do
+    push_to_topic(msg)
+    Logger.info("[PRODUCER_WORKER_#{inspect(self())}] Message pushed to topic #{@topic}")
+    {:noreply, state}
+  end
+
+  # ---------------------------------------------
+  #                    PRIVATE
+  # ---------------------------------------------
+  defp push_to_topic(msg) do
+    KafkaEx.produce(@topic, 0, msg)
   end
 end

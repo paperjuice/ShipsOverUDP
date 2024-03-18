@@ -1,15 +1,21 @@
 defmodule ShipsOverUdp.Web.Api do
-  @moduledoc false
+  @moduledoc """
+    Web API in charge with serving coordinates related to a specific vessel
+    Available routs:
+  - /?vessel_id=<vessel_id>&last_x_msgs=<newest_messeges>
+  - /count (total number of rows in the DB, useful to see packets lost)
+  """
+
   alias ShipsOverUdp.Model.Table.Vessels
   use Plug.Router
 
-  plug Plug.Parsers,
-     parsers: [:urlencoded, :multipart],
-     pass: ["text/*"]
-  plug :match
-  plug :dispatch
+  plug(Plug.Parsers,
+    parsers: [:urlencoded, :multipart],
+    pass: ["text/*"]
+  )
 
-
+  plug(:match)
+  plug(:dispatch)
 
   get "/" do
     conn
@@ -17,10 +23,14 @@ defmodule ShipsOverUdp.Web.Api do
     |> handle_query()
     |> case do
       {:ok, json_list} -> send_resp(conn, 200, json_list)
-
-        # 422 - unprocessable request
+      # 422 - unprocessable request
       {:error, msg} -> send_resp(conn, 422, msg)
     end
+  end
+
+  get "/count" do
+    count = Vessels.row_num()
+    send_resp(conn, 200, "Total number of rows stored: #{count}")
   end
 
   match _ do
