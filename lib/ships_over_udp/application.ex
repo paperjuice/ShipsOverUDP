@@ -37,6 +37,7 @@ alias ShipsOverUdp.MessageProcessor
         }
       },
 
+      {Plug.Cowboy, scheme: :http, plug: ShipsOverUdp.Web.Api, options: [port: 4000]},
 
 
 

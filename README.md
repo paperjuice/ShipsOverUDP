@@ -33,6 +33,7 @@ IMPROVMENTS
 - tests
 - better understanding of Xandra & KafkaEx
 - add behaviour to all api modules
+- show in the readme the coding standard document
 
 WHAT IS LEFT:
 RabbitMQ at first cause ez and then we try Kafka cause better performance per broker

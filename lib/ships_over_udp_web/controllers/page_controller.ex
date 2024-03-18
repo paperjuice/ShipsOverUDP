@@ -1,9 +1,8 @@
 defmodule ShipsOverUdpWeb.PageController do
   use ShipsOverUdpWeb, :controller
 
-  def home(conn, _params) do
-    # The home page is often custom made,
-    # so skip the default app layout.
+  def home(conn, %{"last_x_msgs" => last_x_msgs, "vesssel_id" => vessel_id}) do
+
     render(conn, :home, layout: false)
   end
 end

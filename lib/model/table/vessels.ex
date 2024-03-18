@@ -4,7 +4,7 @@ defmodule ShipsOverUdp.Model.Table.Vessels do
   @schema "default_schema"
   @table "vessels"
 
-  def all_with_limit(vessel_id, limit) do
+  def get_by_vessel_id_with_limit(vessel_id, limit) do
     query = "SELECT * FROM #{@schema}.#{@table} where vessel_id=? limit ?;"
 
     Xandra.Cluster.run(@cluster, fn conn ->
