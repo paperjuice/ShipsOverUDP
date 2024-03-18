@@ -14,6 +14,8 @@ Once the data is pushed to Kafka topics, we are able to consume any new messages
 Consumed messages are commited every X amount of time meaning that, in case all Elixir nodes go down, Kafka will be able to resume where we left off.
 Every time we consume a message we persist it to our CassandraDB setup. In this example we run two shards that share the data. CassandraDB, as a NoSQL database is very well suited to handle very hight load.
 
+Everything runs in Docker containers.
+
 ## Running the system
 ### Prerequisites
 The project requires you to have [Docker](https://www.docker.com/), [make](https://en.wikipedia.org/wiki/Make_(software)) and [Git](https://git-scm.com/book/en/v2/Getting-Started-The-Command-Line) installed on your machine.
