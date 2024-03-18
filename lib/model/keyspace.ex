@@ -9,7 +9,8 @@ defmodule ShipsOverUdp.Model.Keyspace do
   def start_link do
     #{:ok, conn} = Xandra.start_link(nodes: ["127.0.0.1:9042", "127.0.0.1:9043"])
     resp = Xandra.Cluster.start_link(
-      nodes: ["127.0.0.1:9042", "127.0.0.1:9043"],
+      #TODO: make this env vars
+      nodes: ["#{db_domain()}:9042", "#{db_domain()}:9043"],
       pool_size: 10,
       load_balancing: {Xandra.Cluster.LoadBalancingPolicy.DCAwareRoundRobin, []},
       name: @cluster,
@@ -65,5 +66,5 @@ defmodule ShipsOverUdp.Model.Keyspace do
     end
   end
 
-
+  defp db_domain, do: Application.get_env(:ships_over_udp, :cassandra_db_domain)
 end

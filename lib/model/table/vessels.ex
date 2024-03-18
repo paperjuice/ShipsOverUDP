@@ -1,5 +1,8 @@
 defmodule ShipsOverUdp.Model.Table.Vessels do
   @moduledoc false
+
+  require Logger
+
   @cluster ShipsOverUdpXandra
   @schema "default_schema"
   @table "vessels"
@@ -60,24 +63,7 @@ defmodule ShipsOverUdp.Model.Table.Vessels do
         "created_at" => timestamp
       })
     end)
-  end
 
-  def temp(%{vessel_id: vessel_id} = params) do
-    timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
-
-    query = """
-    INSERT INTO #{@schema}.#{@table} (
-      vessel_id
-    ) VALUES (
-     :vessel_id
-    );
-    """
-
-    Xandra.Cluster.run(@cluster, fn conn ->
-      prepared = Xandra.prepare!(conn, query)
-      Xandra.execute(conn, prepared, %{
-        "vessel_id" =>  vessel_id
-      })
-    end)
+    Logger.info("[PERSISTENCY] Message successfully stored")
   end
 end

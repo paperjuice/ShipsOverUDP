@@ -1,22 +1,5 @@
 # ShipsOverUdp
 
-To start your Phoenix server:
-
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
-
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
-
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
-
-## Learn more
-
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
-
 
 KAFKA cheat sheet
 https://medium.com/@TimvanBaarsen/apache-kafka-cli-commands-cheat-sheet-a6f06eac01b
@@ -34,6 +17,12 @@ IMPROVMENTS
 - better understanding of Xandra & KafkaEx
 - add behaviour to all api modules
 - show in the readme the coding standard document
+- mix release
+- extend the configuration. The app is hightly configurable (e.g. poolboy consumer/producer, number or app nodes, kafka brokers, cassandra instances etc.)
 
-WHAT IS LEFT:
-RabbitMQ at first cause ez and then we try Kafka cause better performance per broker
+
+For the purpose of this exercise, I am logging each choke point (udp, produce, consume, insert)
+We don't want that in production because we will fill in the logging system very quickly
+
+
+Commit after each msg with multiple instances or just one instance with delayed commit

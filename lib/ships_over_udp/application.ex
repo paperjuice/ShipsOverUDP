@@ -37,7 +37,7 @@ alias ShipsOverUdp.MessageProcessor
         }
       },
 
-      {Plug.Cowboy, scheme: :http, plug: ShipsOverUdp.Web.Api, options: [port: 4000]},
+      {Plug.Cowboy, scheme: :http, plug: ShipsOverUdp.Web.Api, options: [port: http_port()]},
 
 
 
@@ -101,5 +101,5 @@ alias ShipsOverUdp.MessageProcessor
     ]
   end
 
-
+  defp http_port , do: Application.get_env(:ships_over_udp, :http_port)
 end
