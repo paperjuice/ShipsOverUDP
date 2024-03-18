@@ -28,13 +28,13 @@ defmodule ShipsOverUdp.MixProject do
 
   defp deps do
     [
-      {:poolboy, "~> 1.5.1"},
-      {:xandra, "~> 0.14"},
-      {:kafka_ex, "~> 0.11"},
-      {:uuid, "~> 1.1"},
-      {:plug_cowboy, "~> 2.5"},
+      {:decimal, "~> 2.0"},
       {:jason, "~> 1.2"},
-      {:decimal, "~> 2.0"}
+      {:kafka_ex, "~> 0.11"},
+      {:plug_cowboy, "~> 2.5"},
+      {:poolboy, "~> 1.5.1"},
+      {:uuid, "~> 1.1"},
+      {:xandra, "~> 0.14"}
     ]
   end
 end
