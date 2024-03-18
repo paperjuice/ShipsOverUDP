@@ -37,16 +37,18 @@ defmodule ShipsOverUdp.Model.Keyspace do
   def create_table do
     statement = """
     CREATE TABLE default_schema.vessels (
-    vessel_id text, PRIMARY KEY (vessel_id),
-    sentence_type text,
-    current_time text,
-    latitude text,
-    lat_compass_direction text,
-    longitude text,
-    long_compass_direction text,
-    updated timestamp,
-    created timestamp,
-    );
+      coordinates_id UUID,
+      vessel_id text,
+      sentence_type text,
+      current_time text,
+      latitude text,
+      lat_compass_direction text,
+      longitude text,
+      long_compass_direction text,
+      metadata map<text, text>,
+      created_at timestamp,
+      PRIMARY KEY (vessel_id, created_at, coordinates_id)
+      ) WITH CLUSTERING ORDER BY (created_at DESC);
     """
     execute_init("create_table", statement)
   end

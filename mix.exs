@@ -33,12 +33,15 @@ defmodule ShipsOverUdp.MixProject do
   defp deps do
     [
 
-      {:lz_string, "~> 0.0.8"},
-      {:poolboy, "~> 1.5.1"},
 
+      {:poolboy, "~> 1.5.1"},
       {:xandra, "~> 0.14"},
-      #{:cassandrax, "~> 0.1.0"},
-      #{:triton, "~> 0.2"},
+
+      {:kafka_ex, "~> 0.11"},
+      { :uuid, "~> 1.1" },
+      #{:snappy, git: "https://github.com/fdmanana/snappy-erlang-nif"},
+#      {:snappy, "~> 1.1"},
+#      {:snappyer, "~> 1.2"},
 
 
       # remove most of the below, not useful

@@ -7,9 +7,21 @@
 # General application configuration
 import Config
 
-
-
-
+config :kafka_ex,
+  brokers: [
+    {"localhost", 9091},
+    {"localhost", 9092}
+  ],
+  consumer_group: "ships_consumer_group",
+  client_id: "ships_over_udp_id",
+  sync_timeout: 3000,
+  max_restarts: 100,
+  max_seconds: 60,
+  commit_interval: 5_000,
+  commit_threshold: 100,
+  auto_offset_reset: :none,
+  sleep_for_reconnect: 400,
+  kafka_version: "0.10.1"
 
 
 

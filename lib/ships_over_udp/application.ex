@@ -2,19 +2,45 @@ defmodule ShipsOverUdp.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
+alias ShipsOverUdp.MessageProcessor
 
   use Application
 
   @impl true
   def start(_type, _args) do
+      gen_consumer_impl = MessageProcessor.Consumer
+      consumer_group_name = "ships_over_udp_con_group"
+      topic_names = ["vessels"]
+      consumer_group_opts = [
+        heartbeat_interval: 1_000,
+        commit_interval: 1_000
+      ]
+
     children = [
       ShipsOverUdp.UdpServer,
-      :poolboy.child_spec(:worker, poolboy_config()),
+
+      :poolboy.child_spec(:producer_worker, producer_poolboy_config()),
+      :poolboy.child_spec(:consumer_worker, consumer_poolboy_config()),
 
       %{
         id: ShipsOverUdp.Model.Keyspace,
         start: {ShipsOverUdp.Model.Keyspace, :start_link, []}
       },
+
+
+      %{
+        id: KafkaEx.ConsumerGroup,
+        start: {
+          KafkaEx.ConsumerGroup,
+          :start_link,
+          [gen_consumer_impl, consumer_group_name, topic_names, consumer_group_opts]
+        }
+      },
+
+
+
+
+
 
 
       #TODO: Bunch of not necessary things below, clean up
@@ -52,10 +78,21 @@ defmodule ShipsOverUdp.Application do
   # ---------------------------------------------
   #                    PRIVATE
   # ---------------------------------------------
-   defp poolboy_config do
+   defp producer_poolboy_config do
     [
-      name: {:local, :worker},
-      worker_module: ShipsOverUdp.Producer,
+      name: {:local, :producer_worker},
+      worker_module: ShipsOverUdp.MessageProcessor.ProducerWorker,
+      #TODO: make this env var
+      size: 5, # Max number of spawned processes
+      max_overflow: 2,
+      strategy: :fifo
+    ]
+  end
+
+  defp consumer_poolboy_config do
+    [
+      name: {:local, :consumer_worker},
+      worker_module: ShipsOverUdp.MessageProcessor.ConsumerWorker,
       #TODO: make this env var
       size: 5, # Max number of spawned processes
       max_overflow: 2,

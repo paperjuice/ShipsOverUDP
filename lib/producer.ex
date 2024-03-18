@@ -11,8 +11,6 @@ defmodule ShipsOverUdp.Producer do
   end
 
   def handle_cast({:ais_msg, msg}, state) do
-
-
     IO.inspect(msg, label: MSG_PUBLISHED)
     {:noreply, state}
   end
@@ -26,7 +24,6 @@ defmodule ShipsOverUdp.Producer do
     # save 0.2 milliseconds and just publish
     # Assuming worst case scenario, at 200k msg/s, it would take roughly 40s
     # to do this action on a single node
-    compressed_msg = LSString.compress(msg)
   end
 
 end

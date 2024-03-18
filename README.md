@@ -18,6 +18,12 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
   * Source: https://github.com/phoenixframework/phoenix
 
 
+KAFKA cheat sheet
+https://medium.com/@TimvanBaarsen/apache-kafka-cli-commands-cheat-sheet-a6f06eac01b
+
+CassandraDB
+https://www.heatware.net/cassandra/cassandra-data-model-best-practices/
+
 IMPROVMENTS
 - use callback for util modules to facilitate mocking
 - telemetry, track each chokepoint for time to complete
@@ -25,6 +31,8 @@ IMPROVMENTS
 - improve logging by creating a module on top of Logger so the message is consistent + include module name using __ENV__
 - Potential improvement: add schema validation. Issue is that you have to maintain the schema in two places, tho tests will handle that
 - tests
+- better understanding of Xandra & KafkaEx
+- add behaviour to all api modules
 
 WHAT IS LEFT:
 RabbitMQ at first cause ez and then we try Kafka cause better performance per broker
