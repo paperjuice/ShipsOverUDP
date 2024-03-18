@@ -1,20 +1,19 @@
 defmodule ShipsOverUdp.MessageProcessor.ProducerWorker do
-  @moduledoc false
+  @moduledoc """
+  This module is responsible for asynchronosly pushing messages
+  to Kafka topic
+  """
 
   require Logger
 
   use GenServer
 
-  #TODO: make this env var
+  # TODO: make this env var
   @topic "vessels"
 
-  def start_link(_) do
-    GenServer.start_link(__MODULE__, nil)
-  end
+  def start_link(_), do: GenServer.start_link(__MODULE__, nil)
 
-  def init(_) do
-    {:ok, nil}
-  end
+  def init(_), do: {:ok, nil}
 
   def publish(msg) do
     Task.start(fn ->
@@ -24,9 +23,12 @@ defmodule ShipsOverUdp.MessageProcessor.ProducerWorker do
           try do
             GenServer.cast(pid, {:ais_msg, msg})
           catch
-            #TODO: potentially we can handle the msg here
-            e, r -> IO.inspect("poolboy transaction caught error: #{inspect(e)}, #{inspect(r)}")
-            :ok
+            e, r ->
+              Logger.error(
+                "[PRODUCER_WORKER_#{inspect(self())}] poolboy transaction caught error: #{inspect(e)}, #{inspect(r)}"
+              )
+
+              :ok
           end
         end,
         60_000

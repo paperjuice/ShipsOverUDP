@@ -1,4 +1,11 @@
 defmodule ShipsOverUdp.MessageProcessor.Consumer do
+  @moduledoc """
+  Once a new message is pushed to the Topic, this process is notified
+  and message is being consumed based on offset.
+  Because of the async_commit strategy, after a certain time, messages
+  are being commited and Kafka knows where the consumer left off.
+  """
+
   use KafkaEx.GenConsumer
 
   alias KafkaEx.Protocol.Fetch.Message

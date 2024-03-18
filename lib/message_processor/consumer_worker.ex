@@ -1,17 +1,16 @@
 defmodule ShipsOverUdp.MessageProcessor.ConsumerWorker do
-  @moduledoc false
+  @moduledoc """
+  This module is responsible for consuming messages async
+  up to a max number of processes handled by Poolboy
+  """
   alias ShipsOverUdp.Model.Table.Vessels
   require Logger
 
   use GenServer
 
-  def start_link(_) do
-    GenServer.start_link(__MODULE__, nil)
-  end
+  def start_link(_), do: GenServer.start_link(__MODULE__, nil)
 
-  def init(_) do
-    {:ok, nil}
-  end
+  def init(_), do: {:ok, nil}
 
   def consume(value, offset) do
     Task.start(fn ->
@@ -21,7 +20,10 @@ defmodule ShipsOverUdp.MessageProcessor.ConsumerWorker do
           try do
             GenServer.cast(pid, {:consume_ais_msg, value, offset})
           catch
-            e, r -> Logger.error("[CONSUMER_WORKER] poolboy transaction caught error: #{inspect(e)}, #{inspect(r)}")
+            e, r ->
+              Logger.error(
+                "[CONSUMER_WORKER_#{inspect(self())}] poolboy transaction caught error: #{inspect(e)}, #{inspect(r)}"
+              )
           end
         end,
         60_000
@@ -31,6 +33,7 @@ defmodule ShipsOverUdp.MessageProcessor.ConsumerWorker do
 
   def handle_cast({:consume_ais_msg, value, offset}, state) do
     Logger.info("[CONSUMER_WORKER_#{inspect(self())}] Message consumed")
+
     value
     |> process_value(offset)
     |> Vessels.insert()
@@ -42,7 +45,7 @@ defmodule ShipsOverUdp.MessageProcessor.ConsumerWorker do
   #                    PRIVATE
   # ---------------------------------------------
   defp process_value(msg, offset) do
-   #e.g. $GPGGA,ABC,210230,3855.4487,N,09446.0071,W,1,07,1.1,370.5,M,-29.5,M,,*7A
+    # e.g. $GPGGA,ABC,210230,3855.4487,N,09446.0071,W,1,07,1.1,370.5,M,-29.5,M,,*7A
     [
       sentence_type,
       vessel_id,
@@ -51,9 +54,15 @@ defmodule ShipsOverUdp.MessageProcessor.ConsumerWorker do
       comp_latitude,
       longitude,
       comp_longitude,
-      _, _, _,
-      _, _, _,
-      _, _, _
+      _,
+      _,
+      _,
+      _,
+      _,
+      _,
+      _,
+      _,
+      _
     ] = String.split(msg, ",")
 
     %{
@@ -64,9 +73,8 @@ defmodule ShipsOverUdp.MessageProcessor.ConsumerWorker do
       lat_compass_direction: "#{comp_latitude}",
       longitude: "#{longitude}",
       long_compass_direction: "#{comp_longitude}",
-      #TODO this definitely needs either defstruct or some validator
+      # TODO this definitely needs either defstruct or some validator
       metadata: %{"kafka_offset" => "#{offset}"}
     }
   end
-
 end

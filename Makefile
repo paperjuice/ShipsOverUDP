@@ -9,3 +9,7 @@ infra: ## Run only the infrastructure: Kafka, CassandraDB
 .PHONY: down
 down: ## Stop the container
 	docker-compose -f deploy/docker-compose.yml down
+
+.PHONY: clean
+clean: ## Stop the container
+	docker rm -f $$(docker ps -qa)

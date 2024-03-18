@@ -1,4 +1,9 @@
-# ShipsOverUdp
+# ShipsOverUDP
+
+ShipsOverUDP is a compact service designed to handled thousands of messaged streamed over UDP. It tries to achieve this by making use of a Load balancer to distribute load, Kafka to stream messages and CassandraDB to persist those messages
+
+## Architecture
+
 
 
 KAFKA cheat sheet
@@ -19,6 +24,11 @@ IMPROVMENTS
 - show in the readme the coding standard document
 - mix release
 - extend the configuration. The app is hightly configurable (e.g. poolboy consumer/producer, number or app nodes, kafka brokers, cassandra instances etc.)
+- ScyllaDB potentially better alternative to CassandraDB
+- What is %Xandra.Page{}
+- spec
+- CI/CD
+- git hook to mix format on git add
 
 
 For the purpose of this exercise, I am logging each choke point (udp, produce, consume, insert)
