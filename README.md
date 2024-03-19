@@ -7,12 +7,12 @@ ShipsOverUDP is a compact service designed to handled thousands of messaged stre
 ![design](https://github.com/paperjuice/ShipsOverUDP/assets/15971255/1be93cc2-2d0f-4c37-b273-5f64409cb3f2)
 
 ### Rational
-We have setup a load balancer to listen to the UDP messages. The load balancer distributes the load to the available service instances. In our case, we have two Elixir nodes running but we can expand horizontally with more nodes. This way we ensure better performance, splitting the load, as well as aiming to ensure up to 100% uptime: if the any of the nodes goes down, there are still alive ones to continue processing.
+We have setup a load balancer to listen to the UDP messages. The load balancer distributes the load to the available service instances. In our case, we have two Elixir nodes running but we can expand horizontally with more nodes. This way we ensure better performance, splitting the load, as well as aiming to ensure up to 100% uptime: if the any of the nodes go down, there are still alive ones to continue processing.
 Once the data is distributed, the system makes use of Poolboy to spawn a controlled number of processes to handle those messages. At this point in the flow our number one priority is to facilitate the flow of data in order to avoid congestion and therefore UDP packet loss.
-The data is then asynchronously (based on threads) or in parallel (based on cores) pushed to our Kafka topics. In our case we run 2 brokers, again, to maximize uptime. The Kafka brokers replicate messages so in case of outages, we are covered.
+The data is then asynchronously (based on threads) or in parallel (based on cores) pushed to our Kafka topics. In our case, we run 2 brokers, again, to maximize uptime. The Kafka brokers replicate messages so in case of outages, we are covered.
 Once the data is pushed to Kafka topics, we are able to consume any new messages. We have a Kafka consumer group setup which allows us to consume messages once per consumer regardles of how many consumers are in the cluster.
-Consumed messages are commited every X amount of time meaning that, in case all Elixir nodes go down, Kafka will be able to resume where we left off.
-Every time we consume a message we persist it to our CassandraDB setup. In this example we run two shards that share the data. CassandraDB, as a NoSQL database is very well suited to handle very hight load.
+Consumed messages are commited every X amount of time meaning that, in case all Elixir nodes go down, Kafka will be able to resume where we left off once the system is back up.
+Every time we consume a message we persist it to our CassandraDB setup. In this example we run two shards that share the data. CassandraDB, as a NoSQL database is very well suited to handling very hight load.
 
 Everything runs in Docker containers.
 
@@ -26,6 +26,7 @@ Docker version 25.0.3, build 4debf41
 ```
 
 ### Running the project
+#### Option 1 (recommended)
 First, clone the git project and cd into it
 ```
 git clone https://github.com/paperjuice/ShipsOverUDP.git ships_over_udp && cd ships_over_udp
@@ -37,6 +38,23 @@ make up
 ```
 This command will start 1 Nginx Load Balancer, 1 Zookeeper (Kafka manager), 2 Kafka brokers, 2 Elixir nodes and 2 CassandraDB Shards
 It does take a bit of time to load.
+
+#### Option 2
+If you wish to start just the infrastructure side of project (Kafka and CassandraDB) you can run:
+
+1. Start 2 Kafka brokers and 2 Cassandra shards
+```
+make infra
+```
+2. In a different terminal, get Elixir dependencies
+```
+mix deps.get
+```
+3. You have to wait for a bit for Kafka and Cassandra to be up and running before you start the app.
+```
+iex -S mix
+```
+The environment variables are set up automatically based on whether you `make up` or `make infra`
 
 ### Testing
 If you wish to test the application you will have to push UDP packets to localhost:2052
